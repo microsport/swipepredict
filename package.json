@@ -6,7 +6,8 @@
     "dev": "concurrently \"npm run dev -w apps/web\" \"npm run dev -w apps/api\"",
     "dev:web": "npm run dev -w apps/web",
     "dev:api": "npm run dev -w apps/api",
-    "build": "npm run build -w apps/web && npm run build -w apps/api",
+    "build": "npm run build -w apps/api",
+    "start": "npm run start -w apps/api",
     "lint": "npm run lint -w apps/web && npm run lint -w apps/api"
   },
   "devDependencies": {
