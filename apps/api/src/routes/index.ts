@@ -225,7 +225,7 @@ export async function profileRoutes(app: FastifyInstance): Promise<void> {
       const { data, error } = await supabase
         .from('users')
         .update(updates)
-        .eq('id', req.user.id)
+        .eq('id', (req.user as { id: string }).id)
         .select()
         .single();
 

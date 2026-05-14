@@ -76,9 +76,9 @@ export async function settleFinishedEvents(): Promise<void> {
       if (winningBets && winningBets.length > 0) {
         for (const bet of winningBets) {
           const winAmount = winPool > 0 ? (bet.amount_usdc / winPool) * payoutPool : 0;
-          await supabase.from('users').update({
-            balance_usdc: supabase.raw(`balance_usdc + ${winAmount}`),
-          }).eq('id', bet.user_id);
+          const { data: usr } = await supabase.from('users').select('balance_usdc').eq('id', bet.user_id).single();
+          const newBalance = ((usr as Record<string, number> | null)?.balance_usdc ?? 0) + winAmount;
+          await supabase.from('users').update({ balance_usdc: newBalance }).eq('id', bet.user_id);
 
           await supabase.from('bets').update({ status: 'won', potential_win: winAmount }).eq('id', bet.id);
           await supabase.from('transactions').insert({ user_id: bet.user_id, type: 'win', amount_usdc: winAmount });
