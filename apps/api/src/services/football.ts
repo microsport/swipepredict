@@ -20,6 +20,66 @@ interface ApiEvent {
   team: { id: number; name: string };
 }
 
+// Mock data for demo mode when API key is not available
+const MOCK_FIXTURES: ApiFixture[] = [
+  {
+    fixture: { id: 1001, date: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), status: { short: 'NS' } },
+    league: { id: 262, name: 'Liga MX' },
+    teams: {
+      home: { id: 2283, name: 'Club América', logo: '' },
+      away: { id: 2269, name: 'Guadalajara', logo: '' },
+    },
+  },
+  {
+    fixture: { id: 1002, date: new Date(Date.now() + 5 * 60 * 60 * 1000).toISOString(), status: { short: 'NS' } },
+    league: { id: 262, name: 'Liga MX' },
+    teams: {
+      home: { id: 2279, name: 'Cruz Azul', logo: '' },
+      away: { id: 2285, name: 'UNAM Pumas', logo: '' },
+    },
+  },
+  {
+    fixture: { id: 1003, date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), status: { short: 'NS' } },
+    league: { id: 262, name: 'Liga MX' },
+    teams: {
+      home: { id: 2282, name: 'Tigres UANL', logo: '' },
+      away: { id: 2286, name: 'Monterrey', logo: '' },
+    },
+  },
+  {
+    fixture: { id: 1004, date: new Date(Date.now() + 26 * 60 * 60 * 1000).toISOString(), status: { short: 'NS' } },
+    league: { id: 262, name: 'Liga MX' },
+    teams: {
+      home: { id: 2276, name: 'Toluca', logo: '' },
+      away: { id: 2274, name: 'Santos Laguna', logo: '' },
+    },
+  },
+  {
+    fixture: { id: 1005, date: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(), status: { short: 'NS' } },
+    league: { id: 262, name: 'Liga MX' },
+    teams: {
+      home: { id: 2271, name: 'León', logo: '' },
+      away: { id: 2283, name: 'Club América', logo: '' },
+    },
+  },
+  {
+    fixture: { id: 1006, date: new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString(), status: { short: 'NS' } },
+    league: { id: 262, name: 'Liga MX' },
+    teams: {
+      home: { id: 2269, name: 'Guadalajara', logo: '' },
+      away: { id: 2282, name: 'Tigres UANL', logo: '' },
+    },
+  },
+];
+
+const MOCK_EVENTS: ApiEvent[] = [
+  { time: { elapsed: 23 }, type: 'Goal', detail: 'Normal Goal', team: { id: 2283, name: 'Club América' } },
+  { time: { elapsed: 41 }, type: 'Card', detail: 'Yellow Card', team: { id: 2269, name: 'Guadalajara' } },
+  { time: { elapsed: 67 }, type: 'Goal', detail: 'Normal Goal', team: { id: 2269, name: 'Guadalajara' } },
+];
+
+export const IS_DEMO_MODE = !process.env.FOOTBALL_API_KEY;
+
 const headers = {
   'x-rapidapi-key': process.env.FOOTBALL_API_KEY!,
   'x-rapidapi-host': process.env.FOOTBALL_API_HOST || 'v3.football.api-sports.io',
@@ -35,6 +95,10 @@ async function get<T>(path: string, params: Record<string, string> = {}): Promis
 }
 
 export async function getUpcomingFixtures(leagueId = LIGA_MX_ID, next = 10): Promise<ApiFixture[]> {
+  if (IS_DEMO_MODE) {
+    console.log('[DEMO MODE] Returning mock fixtures');
+    return MOCK_FIXTURES.slice(0, next);
+  }
   return get<ApiFixture[]>('/fixtures', {
     league: String(leagueId),
     next: String(next),
@@ -43,6 +107,10 @@ export async function getUpcomingFixtures(leagueId = LIGA_MX_ID, next = 10): Pro
 }
 
 export async function getLiveFixtures(leagueId = LIGA_MX_ID): Promise<ApiFixture[]> {
+  if (IS_DEMO_MODE) {
+    console.log('[DEMO MODE] Returning empty live fixtures');
+    return [];
+  }
   return get<ApiFixture[]>('/fixtures', {
     league: String(leagueId),
     live: 'all',
@@ -50,10 +118,18 @@ export async function getLiveFixtures(leagueId = LIGA_MX_ID): Promise<ApiFixture
 }
 
 export async function getFixtureEvents(fixtureId: number): Promise<ApiEvent[]> {
+  if (IS_DEMO_MODE) {
+    console.log('[DEMO MODE] Returning mock events');
+    return MOCK_EVENTS;
+  }
   return get<ApiEvent[]>('/fixtures/events', { fixture: String(fixtureId) });
 }
 
 export async function getWorldCupFixtures(next = 20): Promise<ApiFixture[]> {
+  if (IS_DEMO_MODE) {
+    console.log('[DEMO MODE] Returning mock World Cup fixtures');
+    return MOCK_FIXTURES.slice(0, next);
+  }
   return get<ApiFixture[]>('/fixtures', {
     league: String(WORLD_CUP_ID),
     next: String(next),

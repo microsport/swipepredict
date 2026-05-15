@@ -121,3 +121,10 @@ BEGIN
     RETURN v_bet;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- ============================================
+-- DEMO MODE SETUP
+-- ============================================
+-- For demo mode with mock data and 20 USDC for new users,
+-- run the demo-setup.sql file in Supabase SQL Editor
+-- ============================================
